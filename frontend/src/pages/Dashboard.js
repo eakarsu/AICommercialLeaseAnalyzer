@@ -107,6 +107,22 @@ const Dashboard = () => {
       gradient: 'from-fuchsia-600 to-purple-600',
       shadow: 'shadow-fuchsia-500/25'
     },
+    {
+      title: 'AI Lab',
+      description: 'Advanced tools: comparison reports, sublease, early termination, audit, stress testing.',
+      icon: '✨',
+      path: '/ai-lab',
+      gradient: 'from-violet-600 to-fuchsia-600',
+      shadow: 'shadow-violet-500/25'
+    },
+    {
+      title: 'Alerts & iCal',
+      description: 'Configure alerts for expirations and market thresholds; export to iCal/Google Calendar.',
+      icon: '🔔',
+      path: '/alerts',
+      gradient: 'from-amber-600 to-orange-600',
+      shadow: 'shadow-amber-500/25'
+    },
   ];
 
   return (

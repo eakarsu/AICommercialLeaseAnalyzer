@@ -6,7 +6,10 @@ const User = sequelize.define('User', {
   email: { type: DataTypes.STRING, allowNull: false, unique: true },
   password: { type: DataTypes.STRING, allowNull: false },
   name: { type: DataTypes.STRING, allowNull: false },
-  role: { type: DataTypes.STRING, defaultValue: 'analyst' }
+  role: { type: DataTypes.STRING, defaultValue: 'analyst' },
+  isVerified: { type: DataTypes.BOOLEAN, defaultValue: false },
+  verificationToken: { type: DataTypes.STRING },
+  verificationTokenExpiry: { type: DataTypes.DATE }
 }, { tableName: 'users', timestamps: true });
 
 const Lease = sequelize.define('Lease', {
@@ -117,9 +120,22 @@ const MarketComp = sequelize.define('MarketComp', {
   aiAnalysis: { type: DataTypes.JSONB }
 }, { tableName: 'market_comps', timestamps: true });
 
+const LeaseAlert = sequelize.define('LeaseAlert', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  leaseId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'leases', key: 'id' } },
+  userId: { type: DataTypes.INTEGER, references: { model: 'users', key: 'id' } },
+  alertType: { type: DataTypes.STRING, allowNull: false }, // expiration, option_deadline, rent_bump, custom
+  alertDate: { type: DataTypes.DATEONLY, allowNull: false },
+  message: { type: DataTypes.TEXT },
+  notified: { type: DataTypes.BOOLEAN, defaultValue: false },
+  notifiedAt: { type: DataTypes.DATE }
+}, { tableName: 'lease_alerts', timestamps: true });
+
 Lease.hasMany(Escalation, { foreignKey: 'leaseId' });
 Escalation.belongsTo(Lease, { foreignKey: 'leaseId' });
 Lease.hasMany(Negotiation, { foreignKey: 'leaseId' });
 Negotiation.belongsTo(Lease, { foreignKey: 'leaseId' });
+Lease.hasMany(LeaseAlert, { foreignKey: 'leaseId' });
+LeaseAlert.belongsTo(Lease, { foreignKey: 'leaseId' });
 
-module.exports = { sequelize, User, Lease, Escalation, Negotiation, Portfolio, MarketComp };
+module.exports = { sequelize, User, Lease, Escalation, Negotiation, Portfolio, MarketComp, LeaseAlert };

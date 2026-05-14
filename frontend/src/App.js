@@ -11,6 +11,9 @@ import Reports from './pages/Reports';
 import LeaseCalendar from './pages/LeaseCalendar';
 import Calculators from './pages/Calculators';
 import LeaseComparison from './pages/LeaseComparison';
+import AILab from './pages/AILab';
+import Alerts from './pages/Alerts';
+import Notifications from './pages/Notifications';
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -32,6 +35,9 @@ function App() {
         <Route path="/calendar" element={<PrivateRoute><LeaseCalendar /></PrivateRoute>} />
         <Route path="/calculators" element={<PrivateRoute><Calculators /></PrivateRoute>} />
         <Route path="/compare" element={<PrivateRoute><LeaseComparison /></PrivateRoute>} />
+        <Route path="/ai-lab" element={<PrivateRoute><AILab /></PrivateRoute>} />
+        <Route path="/alerts" element={<PrivateRoute><Alerts /></PrivateRoute>} />
+        <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Router>

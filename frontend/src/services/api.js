@@ -72,4 +72,42 @@ export const marketCompAPI = {
   analyze: (data) => api.post('/ai/analyze-market-comp', data),
 };
 
+// Advanced AI tools (NEW custom non-CRUD)
+export const advancedAI = {
+  leaseComparisonReport: (lease_ids) => api.post('/ai/lease-comparison', { lease_ids }),
+  subleaseAnalysis: (lease_id, sublease_terms) => api.post('/ai/sublease-analysis', { lease_id, sublease_terms }),
+  earlyTermination: (lease_id, exit_scenario) => api.post('/ai/early-termination', { lease_id, exit_scenario }),
+  leaseAudit: (lease_id) => api.post('/ai/lease-audit', { lease_id }),
+  extractClauses: (document_text, lease_id, focus) => api.post('/ai/extract-clauses', { document_text, lease_id, focus }),
+};
+
+// Lease alerts / market alerts (calendar-driven notifications)
+export const alertsAPI = {
+  getAll: (page = 1, limit = 20) => api.get(`/lease-alerts?page=${page}&limit=${limit}`),
+  getDue: (days = 90) => api.get(`/lease-alerts/due?days=${days}`),
+  getById: (id) => api.get(`/lease-alerts/${id}`),
+  create: (data) => api.post('/lease-alerts', data),
+  update: (id, data) => api.put(`/lease-alerts/${id}`, data),
+  delete: (id) => api.delete(`/lease-alerts/${id}`),
+};
+
+// Notifications inbox
+export const notificationsAPI = {
+  getAll: () => api.get('/notifications'),
+  getUnreadCount: () => api.get('/notifications/unread-count'),
+  create: (data) => api.post('/notifications', data),
+  markRead: (id) => api.put(`/notifications/${id}/read`),
+  markAllRead: () => api.post('/notifications/mark-all-read'),
+  delete: (id) => api.delete(`/notifications/${id}`),
+};
+
+// CSV exports
+export const exportAPI = {
+  leasesCSV: () => api.get('/export/leases', { responseType: 'blob' }),
+  escalationsCSV: () => api.get('/export/escalations', { responseType: 'blob' }),
+  negotiationsCSV: () => api.get('/export/negotiations', { responseType: 'blob' }),
+  portfolioCSV: () => api.get('/export/portfolio', { responseType: 'blob' }),
+  marketCompsCSV: () => api.get('/export/market-comps', { responseType: 'blob' }),
+};
+
 export default api;
