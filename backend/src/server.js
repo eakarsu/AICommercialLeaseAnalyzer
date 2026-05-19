@@ -34,6 +34,9 @@ app.use('/api/lease-alerts', leaseAlertRoutes);
 // Audit-recommended addition (notifications)
 app.use('/api/notifications', require('./routes/notifications'));
 
+// Custom Views (mounted BEFORE 404/global error handler)
+app.use('/api/custom-views', require('./routes/customViews'));
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
