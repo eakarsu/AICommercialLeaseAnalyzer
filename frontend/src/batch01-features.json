@@ -1,0 +1,111 @@
+{
+  "project": "AICommercialLeaseAnalyzer",
+  "marker": "// === Batch 01 Gaps & Frontend Mounts ===",
+  "features": [
+    {
+      "slug": "agentic-lease-abstractor-reviewer-extracting-claus",
+      "component": "AgenticLeaseAbstractorReviewerExtractingClausPage",
+      "label": "Agentic lease abstractor + reviewer extracting clauses, flagging risks, and suggesting redlines",
+      "endpoint": "/api/cf-agentic-lease-abstractor-reviewer-extracting-claus",
+      "kind": "cfs"
+    },
+    {
+      "slug": "rag-over-lease-portfolio-plus-market-data-for-cont",
+      "component": "RagOverLeasePortfolioPlusMarketDataForContPage",
+      "label": "RAG over lease portfolio plus market data for contextual negotiation advice",
+      "endpoint": "/api/cf-rag-over-lease-portfolio-plus-market-data-for-cont",
+      "kind": "cfs"
+    },
+    {
+      "slug": "real-time-critical-date-alerts-with-auto-drafted-n",
+      "component": "RealTimeCriticalDateAlertsWithAutoDraftedNPage",
+      "label": "Real-time critical-date alerts with auto-drafted notices",
+      "endpoint": "/api/cf-real-time-critical-date-alerts-with-auto-drafted-n",
+      "kind": "cfs"
+    },
+    {
+      "slug": "white-label-deployment-for-tenant-rep-brokerages-a",
+      "component": "WhiteLabelDeploymentForTenantRepBrokeragesAPage",
+      "label": "White-label deployment for tenant-rep brokerages and corporate real-estate teams",
+      "endpoint": "/api/cf-white-label-deployment-for-tenant-rep-brokerages-a",
+      "kind": "cfs"
+    },
+    {
+      "slug": "only-5-ai-endpoints-despite-document-heavy-domain",
+      "component": "Only5AiEndpointsDespiteDocumentHeavyDomainPage",
+      "label": "Only 5 AI endpoints despite document-heavy domain",
+      "endpoint": "/api/gap-only-5-ai-endpoints-despite-document-heavy-domain",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-ai-clause-extraction-cam-escalation-exclusivity",
+      "component": "NoAiClauseExtractionCamEscalationExclusivityPage",
+      "label": "No AI clause-extraction (CAM, escalation, exclusivity) into structured fields",
+      "endpoint": "/api/gap-no-ai-clause-extraction-cam-escalation-exclusivity",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-ai-redlining-negotiation-recommendation-engine-",
+      "component": "NoAiRedliningNegotiationRecommendationEnginePage",
+      "label": "No AI redlining / negotiation-recommendation engine wired to UI",
+      "endpoint": "/api/gap-no-ai-redlining-negotiation-recommendation-engine-",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-ai-portfolio-anomaly-detection-across-leases",
+      "component": "NoAiPortfolioAnomalyDetectionAcrossLeasesPage",
+      "label": "No AI portfolio anomaly detection across leases",
+      "endpoint": "/api/gap-no-ai-portfolio-anomaly-detection-across-leases",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-ai-document-ocr-layer-for-scanned-leases",
+      "component": "NoAiDocumentOcrLayerForScannedLeasesPage",
+      "label": "No AI document OCR layer for scanned leases",
+      "endpoint": "/api/gap-no-ai-document-ocr-layer-for-scanned-leases",
+      "kind": "gap"
+    },
+    {
+      "slug": "notification-routes-exist-but-no-sms-email-deliver",
+      "component": "NotificationRoutesExistButNoSmsEmailDeliverPage",
+      "label": "Notification routes exist but no SMS/email delivery channel",
+      "endpoint": "/api/gap-notification-routes-exist-but-no-sms-email-deliver",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-webhook-outbound-api",
+      "component": "NoWebhookOutboundApiPage",
+      "label": "No webhook outbound API",
+      "endpoint": "/api/gap-no-webhook-outbound-api",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-e-signature-integration-docusign-adobe-sign",
+      "component": "NoESignatureIntegrationDocusignAdobeSignPage",
+      "label": "No e-signature integration (DocuSign, Adobe Sign)",
+      "endpoint": "/api/gap-no-e-signature-integration-docusign-adobe-sign",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-direct-property-management-api-client-yardi-mri",
+      "component": "NoDirectPropertyManagementApiClientYardiMriPage",
+      "label": "No direct property-management API client (Yardi, MRI)",
+      "endpoint": "/api/gap-no-direct-property-management-api-client-yardi-mri",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-tenant-portal-for-repair-expense-reconciliation",
+      "component": "NoTenantPortalForRepairExpenseReconciliationPage",
+      "label": "No tenant-portal for repair/expense reconciliation",
+      "endpoint": "/api/gap-no-tenant-portal-for-repair-expense-reconciliation",
+      "kind": "gap"
+    },
+    {
+      "slug": "no-multi-currency-support-for-international-portfo",
+      "component": "NoMultiCurrencySupportForInternationalPortfoPage",
+      "label": "No multi-currency support for international portfolios",
+      "endpoint": "/api/gap-no-multi-currency-support-for-international-portfo",
+      "kind": "gap"
+    }
+  ]
+}

@@ -21,8 +21,12 @@ const Navbar = () => {
     { path: '/market-comps', label: 'Comps', icon: '📊' },
     { path: '/reports', label: 'Reports', icon: '📋' },
     { path: '/calendar', label: 'Calendar', icon: '📅' },
+    { path: '/alerts', label: 'Alerts', icon: '🔔' },
+    { path: '/notifications', label: 'Notifications', icon: '📬' },
     { path: '/calculators', label: 'Calc', icon: '🧮' },
     { path: '/compare', label: 'Compare', icon: '⚖️' },
+    { path: '/ai-lab', label: 'AI Lab', icon: '✨' },
+    { path: '/custom-views', label: 'Lease Views', icon: '🧭' },
   ];
 
   return (
