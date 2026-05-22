@@ -15,6 +15,12 @@ import AILab from './pages/AILab';
 import Alerts from './pages/Alerts';
 import Notifications from './pages/Notifications';
 import CustomViewsPage from './pages/CustomViewsPage';
+import CoTenancyClauseWatch from './pages/CoTenancyClauseWatch';
+
+import CodexCustomVizFeature from './pages/CodexCustomVizFeature';
+import CodexOperationsFeature from './pages/CodexOperationsFeature';
+
+import TimelineView from './pages/TimelineView';
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -25,6 +31,10 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/insights/timeline" element={<TimelineView />} />
+        <Route path="/codex/custom-viz" element={<CodexCustomVizFeature />} />
+        <Route path="/codex/operations" element={<CodexOperationsFeature />} />
+
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/leases" element={<PrivateRoute><Leases /></PrivateRoute>} />
@@ -40,6 +50,7 @@ function App() {
         <Route path="/alerts" element={<PrivateRoute><Alerts /></PrivateRoute>} />
         <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
         <Route path="/custom-views" element={<PrivateRoute><CustomViewsPage /></PrivateRoute>} />
+        <Route path="/co-tenancy-clause-watch" element={<PrivateRoute><CoTenancyClauseWatch /></PrivateRoute>} />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Router>

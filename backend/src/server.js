@@ -36,6 +36,7 @@ app.use('/api/notifications', require('./routes/notifications'));
 
 // Custom Views (mounted BEFORE 404/global error handler)
 app.use('/api/custom-views', require('./routes/customViews'));
+app.use('/api/co-tenancy-clause-watch', require('./routes/coTenancyClauseWatch'));
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
