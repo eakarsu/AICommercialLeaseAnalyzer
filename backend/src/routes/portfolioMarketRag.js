@@ -29,7 +29,7 @@ function callOpenRouter(prompt, systemPrompt) {
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) return reject(Object.assign(new Error('OPENROUTER_API_KEY not configured'), { code: 'MISSING_KEY' }));
     const body = JSON.stringify({
-      model: process.env.OPENROUTER_MODEL || 'openai/gpt-4o-mini',
+      model: process.env.OPENROUTER_MODEL || 'anthropic/claude-haiku-4.5',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: prompt },

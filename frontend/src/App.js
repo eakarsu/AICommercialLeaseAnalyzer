@@ -16,6 +16,8 @@ import Alerts from './pages/Alerts';
 import Notifications from './pages/Notifications';
 import CustomViewsPage from './pages/CustomViewsPage';
 import CoTenancyClauseWatch from './pages/CoTenancyClauseWatch';
+import FloatingChatbot from './components/FloatingChatbot';
+import AuditTrail from './pages/AuditTrail';
 
 import CodexCustomVizFeature from './pages/CodexCustomVizFeature';
 import CodexOperationsFeature from './pages/CodexOperationsFeature';
@@ -24,7 +26,12 @@ import TimelineView from './pages/TimelineView';
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('token');
-  return token ? children : <Navigate to="/login" />;
+  return token ? (
+    <>
+      {children}
+      <FloatingChatbot />
+    </>
+  ) : <Navigate to="/login" />;
 };
 
 function App() {
@@ -49,6 +56,7 @@ function App() {
         <Route path="/ai-lab" element={<PrivateRoute><AILab /></PrivateRoute>} />
         <Route path="/alerts" element={<PrivateRoute><Alerts /></PrivateRoute>} />
         <Route path="/notifications" element={<PrivateRoute><Notifications /></PrivateRoute>} />
+        <Route path="/audit-trail" element={<PrivateRoute><AuditTrail /></PrivateRoute>} />
         <Route path="/custom-views" element={<PrivateRoute><CustomViewsPage /></PrivateRoute>} />
         <Route path="/co-tenancy-clause-watch" element={<PrivateRoute><CoTenancyClauseWatch /></PrivateRoute>} />
         <Route path="*" element={<Navigate to="/login" />} />

@@ -55,9 +55,22 @@ function validateLeaseId(req, res, next) {
 function validateAlert(req, res, next) {
   const { lease_id, alert_type, alert_date } = req.body;
   const errors = [];
+  const allowedTypes = [
+    'expiration',
+    'option_deadline',
+    'rent_bump',
+    'custom',
+    'renewal',
+    'rent_review',
+    'escalation',
+    'option_exercise',
+    'market_threshold',
+    'comparable_change',
+    'tenant_credit'
+  ];
   if (!lease_id) errors.push('lease_id is required');
-  if (!alert_type || !['expiration', 'option_deadline', 'rent_bump', 'custom'].includes(alert_type)) {
-    errors.push('alert_type must be one of: expiration, option_deadline, rent_bump, custom');
+  if (!alert_type || !allowedTypes.includes(alert_type)) {
+    errors.push(`alert_type must be one of: ${allowedTypes.join(', ')}`);
   }
   if (!alert_date || isNaN(Date.parse(alert_date))) {
     errors.push('alert_date must be a valid date string');

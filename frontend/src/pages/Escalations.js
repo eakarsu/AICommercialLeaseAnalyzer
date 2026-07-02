@@ -11,6 +11,18 @@ const emptyForm = {
   cpiIndex: '', capRate: '', floorRate: '', notes: ''
 };
 
+const getEscalationRent = (item) => item?.baseRent ?? item?.currentRent ?? '';
+const getEscalationFrequency = (item) => item?.escalationFrequency || item?.escalationSchedule || '';
+const formatCurrency = (value) => {
+  if (value === undefined || value === null || value === '') return 'Not specified';
+  return `$${Number(value || 0).toLocaleString()}`;
+};
+const formatPercent = (value) => {
+  if (value === undefined || value === null || value === '') return 'Not specified';
+  return `${Number(value).toFixed(Number(value) % 1 === 0 ? 0 : 2)}%`;
+};
+const formatText = (value) => value || 'Not specified';
+
 const Escalations = () => {
   const [items, setItems] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -77,7 +89,13 @@ const Escalations = () => {
     setAiLoading(true);
     setAiResult(null);
     try {
-      const { data } = await escalationAPI.analyze(selected);
+      const { data } = await escalationAPI.analyze({
+        ...selected,
+        currentRent: getEscalationRent(selected),
+        baseRent: getEscalationRent(selected),
+        escalationSchedule: getEscalationFrequency(selected),
+        escalationFrequency: getEscalationFrequency(selected)
+      });
       setAiResult(data.analysis || data);
     } catch (err) { setError('AI analysis failed'); }
     finally { setAiLoading(false); }
@@ -122,9 +140,9 @@ const Escalations = () => {
                     <td className="p-4"><span className="text-white font-medium">{item.leaseName || item.tenantName}</span></td>
                     <td className="p-4 text-dark-300">{item.propertyAddress}</td>
                     <td className="p-4"><span className="px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-medium">{item.escalationType}</span></td>
-                    <td className="p-4 text-emerald-400 font-semibold">${Number(item.baseRent || 0).toLocaleString()}</td>
-                    <td className="p-4 text-white">{item.escalationRate}%</td>
-                    <td className="p-4 text-dark-300">{item.escalationFrequency}</td>
+                    <td className="p-4 text-emerald-400 font-semibold">{formatCurrency(getEscalationRent(item))}</td>
+                    <td className="p-4 text-white">{formatPercent(item.escalationRate)}</td>
+                    <td className="p-4 text-dark-300">{formatText(getEscalationFrequency(item))}</td>
                   </tr>
                 ))}
               </tbody>
@@ -138,18 +156,18 @@ const Escalations = () => {
           <div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div className="space-y-4">
-                <div><span className="text-dark-400 text-xs uppercase tracking-wider block mb-1">Lease / Tenant</span><span className="text-white text-lg font-semibold">{selected.leaseName || selected.tenantName}</span></div>
-                <div><span className="text-dark-400 text-xs uppercase tracking-wider block mb-1">Property Address</span><span className="text-white">{selected.propertyAddress}</span></div>
-                <div><span className="text-dark-400 text-xs uppercase tracking-wider block mb-1">Escalation Type</span><span className="px-3 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 text-sm font-medium">{selected.escalationType}</span></div>
-                <div><span className="text-dark-400 text-xs uppercase tracking-wider block mb-1">Frequency</span><span className="text-white">{selected.escalationFrequency}</span></div>
+                <div><span className="text-dark-400 text-xs uppercase tracking-wider block mb-1">Lease / Tenant</span><span className="text-white text-lg font-semibold">{formatText(selected.leaseName || selected.tenantName)}</span></div>
+                <div><span className="text-dark-400 text-xs uppercase tracking-wider block mb-1">Property Address</span><span className="text-white">{formatText(selected.propertyAddress)}</span></div>
+                <div><span className="text-dark-400 text-xs uppercase tracking-wider block mb-1">Escalation Type</span><span className="px-3 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 text-sm font-medium">{formatText(selected.escalationType)}</span></div>
+                <div><span className="text-dark-400 text-xs uppercase tracking-wider block mb-1">Frequency</span><span className="text-white">{formatText(getEscalationFrequency(selected))}</span></div>
               </div>
               <div className="space-y-4">
-                <div><span className="text-dark-400 text-xs uppercase tracking-wider block mb-1">Base Rent</span><span className="text-emerald-400 text-2xl font-bold">${Number(selected.baseRent || 0).toLocaleString()}</span></div>
-                <div><span className="text-dark-400 text-xs uppercase tracking-wider block mb-1">Escalation Rate</span><span className="text-white text-lg">{selected.escalationRate}%</span></div>
-                <div><span className="text-dark-400 text-xs uppercase tracking-wider block mb-1">CPI Index</span><span className="text-white">{selected.cpiIndex || 'N/A'}</span></div>
+                <div><span className="text-dark-400 text-xs uppercase tracking-wider block mb-1">Base Rent</span><span className="text-emerald-400 text-2xl font-bold">{formatCurrency(getEscalationRent(selected))}</span></div>
+                <div><span className="text-dark-400 text-xs uppercase tracking-wider block mb-1">Escalation Rate</span><span className="text-white text-lg">{formatPercent(selected.escalationRate)}</span></div>
+                <div><span className="text-dark-400 text-xs uppercase tracking-wider block mb-1">CPI Index</span><span className="text-white">{formatText(selected.cpiIndex)}</span></div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div><span className="text-dark-400 text-xs uppercase tracking-wider block mb-1">Cap Rate</span><span className="text-white">{selected.capRate || 'N/A'}%</span></div>
-                  <div><span className="text-dark-400 text-xs uppercase tracking-wider block mb-1">Floor Rate</span><span className="text-white">{selected.floorRate || 'N/A'}%</span></div>
+                  <div><span className="text-dark-400 text-xs uppercase tracking-wider block mb-1">Cap Rate</span><span className="text-white">{formatPercent(selected.capRate)}</span></div>
+                  <div><span className="text-dark-400 text-xs uppercase tracking-wider block mb-1">Floor Rate</span><span className="text-white">{formatPercent(selected.floorRate)}</span></div>
                 </div>
               </div>
             </div>

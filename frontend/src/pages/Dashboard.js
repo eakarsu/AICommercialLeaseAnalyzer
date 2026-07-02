@@ -123,6 +123,14 @@ const Dashboard = () => {
       gradient: 'from-amber-600 to-orange-600',
       shadow: 'shadow-amber-500/25'
     },
+    {
+      title: 'Audit Trail',
+      description: 'Review app actions, chatbot-created records, AI runs, exports, edits, and deletes.',
+      icon: '🧾',
+      path: '/audit-trail',
+      gradient: 'from-cyan-600 to-blue-600',
+      shadow: 'shadow-cyan-500/25'
+    },
   ];
 
   return (

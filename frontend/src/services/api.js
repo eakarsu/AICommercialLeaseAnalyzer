@@ -4,6 +4,22 @@ const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:4001/api';
 
 const api = axios.create({ baseURL: API_BASE });
 
+const normalizeListResponse = (response, keys = []) => {
+  const payload = response.data;
+  if (Array.isArray(payload)) return response;
+
+  const list = [
+    payload?.data,
+    ...keys.map((key) => payload?.[key])
+  ].find(Array.isArray);
+
+  return {
+    ...response,
+    data: list || [],
+    pagination: payload?.pagination
+  };
+};
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
@@ -28,7 +44,7 @@ export const authAPI = {
 };
 
 export const leaseAPI = {
-  getAll: () => api.get('/leases'),
+  getAll: () => api.get('/leases').then((response) => normalizeListResponse(response, ['leases'])),
   getById: (id) => api.get(`/leases/${id}`),
   create: (data) => api.post('/leases', data),
   update: (id, data) => api.put(`/leases/${id}`, data),
@@ -37,7 +53,7 @@ export const leaseAPI = {
 };
 
 export const escalationAPI = {
-  getAll: () => api.get('/escalations'),
+  getAll: () => api.get('/escalations').then((response) => normalizeListResponse(response, ['escalations'])),
   getById: (id) => api.get(`/escalations/${id}`),
   create: (data) => api.post('/escalations', data),
   update: (id, data) => api.put(`/escalations/${id}`, data),
@@ -46,7 +62,7 @@ export const escalationAPI = {
 };
 
 export const negotiationAPI = {
-  getAll: () => api.get('/negotiations'),
+  getAll: () => api.get('/negotiations').then((response) => normalizeListResponse(response, ['negotiations'])),
   getById: (id) => api.get(`/negotiations/${id}`),
   create: (data) => api.post('/negotiations', data),
   update: (id, data) => api.put(`/negotiations/${id}`, data),
@@ -55,7 +71,7 @@ export const negotiationAPI = {
 };
 
 export const portfolioAPI = {
-  getAll: () => api.get('/portfolio'),
+  getAll: () => api.get('/portfolio').then((response) => normalizeListResponse(response, ['portfolio', 'properties'])),
   getById: (id) => api.get(`/portfolio/${id}`),
   create: (data) => api.post('/portfolio', data),
   update: (id, data) => api.put(`/portfolio/${id}`, data),
@@ -64,7 +80,7 @@ export const portfolioAPI = {
 };
 
 export const marketCompAPI = {
-  getAll: () => api.get('/market-comps'),
+  getAll: () => api.get('/market-comps').then((response) => normalizeListResponse(response, ['marketComps', 'comps'])),
   getById: (id) => api.get(`/market-comps/${id}`),
   create: (data) => api.post('/market-comps', data),
   update: (id, data) => api.put(`/market-comps/${id}`, data),
@@ -74,16 +90,16 @@ export const marketCompAPI = {
 
 // Advanced AI tools (NEW custom non-CRUD)
 export const advancedAI = {
-  leaseComparisonReport: (lease_ids) => api.post('/ai/lease-comparison', { lease_ids }),
-  subleaseAnalysis: (lease_id, sublease_terms) => api.post('/ai/sublease-analysis', { lease_id, sublease_terms }),
-  earlyTermination: (lease_id, exit_scenario) => api.post('/ai/early-termination', { lease_id, exit_scenario }),
-  leaseAudit: (lease_id) => api.post('/ai/lease-audit', { lease_id }),
-  extractClauses: (document_text, lease_id, focus) => api.post('/ai/extract-clauses', { document_text, lease_id, focus }),
+  leaseComparisonReport: (lease_ids, lease_snapshots = []) => api.post('/ai/lease-comparison', { lease_ids, lease_snapshots }),
+  subleaseAnalysis: (lease_id, sublease_terms, lease_snapshot) => api.post('/ai/sublease-analysis', { lease_id, sublease_terms, lease_snapshot }),
+  earlyTermination: (lease_id, exit_scenario, lease_snapshot) => api.post('/ai/early-termination', { lease_id, exit_scenario, lease_snapshot }),
+  leaseAudit: (lease_id, lease_snapshot) => api.post('/ai/lease-audit', { lease_id, lease_snapshot }),
+  extractClauses: (document_text, lease_id, focus, lease_snapshot) => api.post('/ai/extract-clauses', { document_text, lease_id, focus, lease_snapshot }),
 };
 
 // Lease alerts / market alerts (calendar-driven notifications)
 export const alertsAPI = {
-  getAll: (page = 1, limit = 20) => api.get(`/lease-alerts?page=${page}&limit=${limit}`),
+  getAll: (page = 1, limit = 20) => api.get(`/lease-alerts?page=${page}&limit=${limit}`).then((response) => normalizeListResponse(response, ['alerts'])),
   getDue: (days = 90) => api.get(`/lease-alerts/due?days=${days}`),
   getById: (id) => api.get(`/lease-alerts/${id}`),
   create: (data) => api.post('/lease-alerts', data),
@@ -93,12 +109,27 @@ export const alertsAPI = {
 
 // Notifications inbox
 export const notificationsAPI = {
-  getAll: () => api.get('/notifications'),
+  getAll: () => api.get('/notifications').then((response) => normalizeListResponse(response, ['notifications', 'items'])),
   getUnreadCount: () => api.get('/notifications/unread-count'),
   create: (data) => api.post('/notifications', data),
   markRead: (id) => api.put(`/notifications/${id}/read`),
   markAllRead: () => api.post('/notifications/mark-all-read'),
   delete: (id) => api.delete(`/notifications/${id}`),
+};
+
+// App assistant: natural-language CRUD actions over the same backend tables
+export const chatbotAPI = {
+  sendMessage: (message, options = {}) => api.post('/chatbot/message', { message, ...options }),
+  getHistory: () => api.get('/chatbot/history'),
+  clearHistory: () => api.delete('/chatbot/history'),
+};
+
+export const auditAPI = {
+  getAll: () => api.get('/audit-logs').then((response) => normalizeListResponse(response, ['logs', 'auditLogs'])),
+  getById: (id) => api.get(`/audit-logs/${id}`),
+  create: (data) => api.post('/audit-logs', data),
+  update: (id, data) => api.put(`/audit-logs/${id}`, data),
+  delete: (id) => api.delete(`/audit-logs/${id}`),
 };
 
 // CSV exports

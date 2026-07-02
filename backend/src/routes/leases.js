@@ -5,6 +5,7 @@ const pdfParse = require('pdf-parse');
 const { Lease } = require('../models');
 const { authenticateToken } = require('../middleware/auth');
 const { validateLease } = require('../middleware/validate');
+const { recordAudit } = require('../utils/audit');
 const router = express.Router();
 
 // Multer: PDF only, 20 MB max, stored in memory for text extraction
@@ -56,6 +57,13 @@ router.get('/:id', authenticateToken, async (req, res) => {
 router.post('/', authenticateToken, validateLease, async (req, res) => {
   try {
     const lease = await Lease.create(req.body);
+    await recordAudit(req, {
+      action: 'create',
+      entityType: 'lease',
+      entityId: lease.id,
+      title: `Created lease for ${lease.tenantName}`,
+      details: { tenantName: lease.tenantName, propertyAddress: lease.propertyAddress }
+    });
     res.status(201).json(lease);
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
@@ -65,6 +73,13 @@ router.put('/:id', authenticateToken, async (req, res) => {
     const lease = await Lease.findByPk(req.params.id);
     if (!lease) return res.status(404).json({ error: 'Lease not found' });
     await lease.update(req.body);
+    await recordAudit(req, {
+      action: 'update',
+      entityType: 'lease',
+      entityId: lease.id,
+      title: `Updated lease for ${lease.tenantName}`,
+      details: { fields: Object.keys(req.body || {}) }
+    });
     res.json(lease);
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
@@ -73,7 +88,14 @@ router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const lease = await Lease.findByPk(req.params.id);
     if (!lease) return res.status(404).json({ error: 'Lease not found' });
+    const title = `Deleted lease for ${lease.tenantName}`;
     await lease.destroy();
+    await recordAudit(req, {
+      action: 'delete',
+      entityType: 'lease',
+      entityId: req.params.id,
+      title
+    });
     res.json({ message: 'Lease deleted successfully' });
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
@@ -111,7 +133,7 @@ router.post('/extract-terms', authenticateToken, async (req, res) => {
 
     const axios = require('axios');
     const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-    const MODEL = 'anthropic/claude-3-5-sonnet-20241022';
+    const MODEL = process.env.OPENROUTER_MODEL || 'anthropic/claude-haiku-4.5';
     const SYSTEM = 'You are an expert commercial real estate attorney and lease analyst. Provide detailed analysis of lease terms, risks, and negotiation strategies.';
 
     const prompt = `Extract all key lease terms from the following commercial lease document text and return them as structured JSON.

@@ -62,7 +62,7 @@ async function callOpenRouter(prompt, system) {
     err.code = 'MISSING_KEY';
     throw err;
   }
-  const model = process.env.OPENROUTER_MODEL || 'openai/gpt-4o-mini';
+  const model = process.env.OPENROUTER_MODEL || 'anthropic/claude-haiku-4.5';
   const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {

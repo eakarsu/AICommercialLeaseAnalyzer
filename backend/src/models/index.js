@@ -131,11 +131,36 @@ const LeaseAlert = sequelize.define('LeaseAlert', {
   notifiedAt: { type: DataTypes.DATE }
 }, { tableName: 'lease_alerts', timestamps: true });
 
+const AuditLog = sequelize.define('AuditLog', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  userId: { type: DataTypes.INTEGER, references: { model: 'users', key: 'id' } },
+  action: { type: DataTypes.STRING, allowNull: false },
+  entityType: { type: DataTypes.STRING, allowNull: false },
+  entityId: { type: DataTypes.STRING },
+  title: { type: DataTypes.STRING, allowNull: false },
+  status: { type: DataTypes.STRING, defaultValue: 'completed' },
+  source: { type: DataTypes.STRING, defaultValue: 'app' },
+  details: { type: DataTypes.JSONB }
+}, { tableName: 'audit_logs', timestamps: true });
+
+const ChatMessage = sequelize.define('ChatMessage', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  userId: { type: DataTypes.INTEGER, references: { model: 'users', key: 'id' } },
+  prompt: { type: DataTypes.TEXT, allowNull: false },
+  response: { type: DataTypes.JSONB },
+  status: { type: DataTypes.STRING, defaultValue: 'completed' },
+  source: { type: DataTypes.STRING, defaultValue: 'floating_chatbot' }
+}, { tableName: 'chat_messages', timestamps: true });
+
 Lease.hasMany(Escalation, { foreignKey: 'leaseId' });
 Escalation.belongsTo(Lease, { foreignKey: 'leaseId' });
 Lease.hasMany(Negotiation, { foreignKey: 'leaseId' });
 Negotiation.belongsTo(Lease, { foreignKey: 'leaseId' });
 Lease.hasMany(LeaseAlert, { foreignKey: 'leaseId' });
 LeaseAlert.belongsTo(Lease, { foreignKey: 'leaseId' });
+User.hasMany(AuditLog, { foreignKey: 'userId' });
+AuditLog.belongsTo(User, { foreignKey: 'userId' });
+User.hasMany(ChatMessage, { foreignKey: 'userId' });
+ChatMessage.belongsTo(User, { foreignKey: 'userId' });
 
-module.exports = { sequelize, User, Lease, Escalation, Negotiation, Portfolio, MarketComp, LeaseAlert };
+module.exports = { sequelize, User, Lease, Escalation, Negotiation, Portfolio, MarketComp, LeaseAlert, AuditLog, ChatMessage };

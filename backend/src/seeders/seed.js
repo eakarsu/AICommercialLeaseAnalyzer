@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../../../.env') });
-const { sequelize, User, Lease, Escalation, Negotiation, Portfolio, MarketComp } = require('../models');
+const { sequelize, User, Lease, Escalation, Negotiation, Portfolio, MarketComp, LeaseAlert, AuditLog } = require('../models');
 
 async function seed() {
   try {
@@ -11,11 +11,11 @@ async function seed() {
 
     // Users
     const hashedPassword = await bcrypt.hash('password123', 10);
-    await User.bulkCreate([
+    const users = await User.bulkCreate([
       { email: 'admin@leaseanalyzer.com', password: hashedPassword, name: 'Sarah Johnson', role: 'admin' },
       { email: 'analyst@leaseanalyzer.com', password: hashedPassword, name: 'Michael Chen', role: 'analyst' },
       { email: 'manager@leaseanalyzer.com', password: hashedPassword, name: 'Emily Davis', role: 'manager' }
-    ]);
+    ], { returning: true });
     console.log('Users seeded');
 
     // 15 Leases
@@ -117,6 +117,54 @@ async function seed() {
       { propertyAddress: '401 Congress Ave, Austin, TX 78701', propertyType: 'Office', submarket: 'CBD', market: 'Austin', squareFootage: 30000, askingRentPerSqFt: 56.00, effectiveRentPerSqFt: 50.00, occupancyRate: 93.0, leaseType: 'Full Service', tenantName: 'Lone Star Capital Management', transactionDate: '2024-04-15', freeRentMonths: 3, tiAllowance: 60.00, escalationRate: 3.00, buildingClass: 'A+', yearBuilt: 2022, parkingRatio: '3:1000', source: 'CoStar', notes: 'Trophy asset, top-of-market rents' }
     ]);
     console.log('Market Comps seeded (15 items)');
+
+    const addDays = (days) => {
+      const date = new Date();
+      date.setDate(date.getDate() + days);
+      return date.toISOString().split('T')[0];
+    };
+
+    const alertTemplates = [
+      { leaseId: 1, alertType: 'expiration', alertDate: addDays(15), message: 'Prepare Acme renewal packet and market comparison report.' },
+      { leaseId: 2, alertType: 'expiration', alertDate: addDays(30), message: 'Review TechVenture Labs expiration and renewal strategy.' },
+      { leaseId: 3, alertType: 'rent_review', alertDate: addDays(35), message: 'Review Global Pharma rent economics against life-science market comps.' },
+      { leaseId: 4, alertType: 'market_threshold', alertDate: addDays(40), message: 'Check retail percentage rent breakpoint against updated market sales assumptions.' },
+      { leaseId: 5, alertType: 'option_deadline', alertDate: addDays(45), message: 'CloudScale Systems early termination option review window.' },
+      { leaseId: 6, alertType: 'option_exercise', alertDate: addDays(50), message: 'Confirm Pacific Trading renewal option notice requirements.' },
+      { leaseId: 7, alertType: 'tenant_credit', alertDate: addDays(55), message: 'Update FirstBank credit review before renewal negotiation.' },
+      { leaseId: 8, alertType: 'comparable_change', alertDate: addDays(58), message: 'Refresh fitness retail comparable rents before alert window closes.' },
+      { leaseId: 9, alertType: 'rent_bump', alertDate: addDays(60), message: 'DataCore Analytics annual escalation notice and rent schedule update.' },
+      { leaseId: 10, alertType: 'escalation', alertDate: addDays(70), message: 'Calculate Gourmet Holdings percentage rent and escalation exposure.' },
+      { leaseId: 11, alertType: 'renewal', alertDate: addDays(75), message: 'Start MedTech Solutions renewal package and TI analysis.' },
+      { leaseId: 12, alertType: 'rent_review', alertDate: addDays(80), message: 'Benchmark Sterling Law rent against premium office comps.' },
+      { leaseId: 13, alertType: 'market_threshold', alertDate: addDays(85), message: 'Check Phoenix industrial rent threshold and logistics demand.' },
+      { leaseId: 14, alertType: 'custom', alertDate: addDays(90), message: 'Confirm rooftop/studio access provisions before renewal planning.' },
+      { leaseId: 15, alertType: 'option_deadline', alertDate: addDays(120), message: 'Track National Insurance expansion option and notice deadline.' }
+    ];
+
+    await LeaseAlert.bulkCreate(
+      users.flatMap((user) => alertTemplates.map((alert) => ({ ...alert, userId: user.id })))
+    );
+    console.log('Lease alerts seeded (15 items per user)');
+
+    await AuditLog.bulkCreate([
+      { userId: users[0].id, action: 'create', entityType: 'lease', entityId: '1', title: 'Created lease for Acme Corporation', source: 'seed', details: { module: 'leases' } },
+      { userId: users[0].id, action: 'create', entityType: 'lease', entityId: '2', title: 'Created lease for TechVenture Labs', source: 'seed', details: { module: 'leases' } },
+      { userId: users[1].id, action: 'create', entityType: 'escalation', entityId: '1', title: 'Created escalation for Acme Corporation', source: 'seed', details: { module: 'escalations' } },
+      { userId: users[1].id, action: 'update', entityType: 'escalation', entityId: '5', title: 'Updated escalation review for CloudScale Systems', source: 'seed', details: { fields: ['notes', 'status'] } },
+      { userId: users[2].id, action: 'create', entityType: 'negotiation', entityId: '1', title: 'Created renewal negotiation for Acme Corporation', source: 'seed', details: { module: 'negotiations' } },
+      { userId: users[2].id, action: 'update', entityType: 'negotiation', entityId: '6', title: 'Approved Pacific Trading expansion negotiation', source: 'seed', details: { status: 'Approved' } },
+      { userId: users[0].id, action: 'create', entityType: 'portfolio', entityId: '1', title: 'Created portfolio property Market Street Tower', source: 'seed', details: { module: 'portfolio' } },
+      { userId: users[1].id, action: 'create', entityType: 'marketComp', entityId: '1', title: 'Created market comp for 150 California St', source: 'seed', details: { market: 'San Francisco' } },
+      { userId: users[0].id, action: 'create', entityType: 'alert', entityId: '1', title: 'Created expiration alert for Acme Corporation', source: 'seed', details: { module: 'alerts' } },
+      { userId: users[2].id, action: 'run_ai', entityType: 'aiLab', entityId: 'lease-audit', title: 'Ran lease audit workflow', source: 'seed', details: { workflow: 'Lease Audit' } },
+      { userId: users[1].id, action: 'run_ai', entityType: 'aiLab', entityId: 'comparison', title: 'Ran lease comparison workflow', source: 'seed', details: { workflow: 'Lease Comparison' } },
+      { userId: users[0].id, action: 'export', entityType: 'report', entityId: 'leases-csv', title: 'Exported leases CSV', source: 'seed', details: { format: 'csv' } },
+      { userId: users[2].id, action: 'create', entityType: 'notification', entityId: 'default', title: 'Created default notification set', source: 'seed', details: { count: 15 } },
+      { userId: users[1].id, action: 'create', entityType: 'customView', entityId: 'clause-rules', title: 'Created clause rule workspace', source: 'seed', details: { module: 'customViews' } },
+      { userId: users[0].id, action: 'run_ai', entityType: 'chatbot', entityId: 'assistant', title: 'Chatbot assistant enabled', source: 'seed', details: { placement: 'floating' } }
+    ]);
+    console.log('Audit logs seeded (15 items)');
 
     console.log('\n✅ Database seeding completed successfully!');
     console.log('Login credentials:');

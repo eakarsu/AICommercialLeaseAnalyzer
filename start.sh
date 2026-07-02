@@ -9,6 +9,7 @@ set -e
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BACKEND_PORT=4001
 FRONTEND_PORT=3000
+export OPENROUTER_MODEL="${OPENROUTER_MODEL:-anthropic/claude-haiku-4.5}"
 
 # Colors
 RED='\033[0;31m'
@@ -29,6 +30,23 @@ echo -e "${NC}"
 # ---- Clean up used ports ----
 echo -e "${YELLOW}[1/6] Cleaning up ports ${BACKEND_PORT} and ${FRONTEND_PORT}...${NC}"
 
+cleanup_project_processes() {
+  local pids=$(ps -eo pid=,command= \
+    | grep -F "$PROJECT_DIR" \
+    | grep -E 'nodemon src/server\.js|node src/server\.js|react-scripts start|react-scripts/scripts/start\.js' \
+    | grep -v grep \
+    | awk '{print $1}' \
+    | sort -u)
+
+  if [ -n "$pids" ]; then
+    echo -e "${RED}  Killing stale project dev processes: $pids${NC}"
+    echo "$pids" | xargs kill -9 2>/dev/null || true
+    sleep 1
+  else
+    echo -e "${GREEN}  No stale project dev processes found${NC}"
+  fi
+}
+
 cleanup_port() {
   local port=$1
   local pids=$(lsof -ti :$port 2>/dev/null || true)
@@ -41,6 +59,7 @@ cleanup_port() {
   fi
 }
 
+cleanup_project_processes
 cleanup_port $BACKEND_PORT
 cleanup_port $FRONTEND_PORT
 
@@ -126,6 +145,8 @@ echo -e "${GREEN}║  Application is starting!                               ║
 echo -e "${GREEN}║                                                         ║${NC}"
 echo -e "${GREEN}║  Frontend: ${CYAN}http://localhost:${FRONTEND_PORT}${GREEN}                       ║${NC}"
 echo -e "${GREEN}║  Backend:  ${CYAN}http://localhost:${BACKEND_PORT}${GREEN}                       ║${NC}"
+echo -e "${GREEN}║                                                         ║${NC}"
+echo -e "${GREEN}║  OpenRouter model: ${CYAN}${OPENROUTER_MODEL}${GREEN}        ║${NC}"
 echo -e "${GREEN}║                                                         ║${NC}"
 echo -e "${GREEN}║  Login: admin@leaseanalyzer.com / password123           ║${NC}"
 echo -e "${GREEN}║                                                         ║${NC}"

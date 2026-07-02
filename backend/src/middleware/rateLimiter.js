@@ -1,6 +1,6 @@
 const rateLimit = new Map(); // userId -> { count, resetAt }
 
-const AI_LIMIT = 20;
+const AI_LIMIT = Number(process.env.AI_RATE_LIMIT_PER_HOUR || 500);
 const WINDOW_MS = 60 * 60 * 1000; // 1 hour
 
 function aiRateLimiter(req, res, next) {

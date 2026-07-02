@@ -31,6 +31,8 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/ai', aiNewRoutes);
 app.use('/api/export', exportRoutes);
 app.use('/api/lease-alerts', leaseAlertRoutes);
+app.use('/api/chatbot', require('./routes/chatbot'));
+app.use('/api/audit-logs', require('./routes/auditLogs'));
 // Audit-recommended addition (notifications)
 app.use('/api/notifications', require('./routes/notifications'));
 

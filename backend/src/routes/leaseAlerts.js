@@ -3,6 +3,7 @@ const { Op } = require('sequelize');
 const { LeaseAlert, Lease } = require('../models');
 const { authenticateToken } = require('../middleware/auth');
 const { validateAlert } = require('../middleware/validate');
+const { recordAudit } = require('../utils/audit');
 const router = express.Router();
 
 // POST /api/lease-alerts — create a new alert for a lease event
@@ -19,6 +20,14 @@ router.post('/', authenticateToken, validateAlert, async (req, res) => {
       alertType: alert_type,
       alertDate: alert_date,
       message: message || null
+    });
+
+    await recordAudit(req, {
+      action: 'create',
+      entityType: 'alert',
+      entityId: alert.id,
+      title: `Created ${alert_type} alert for ${lease.tenantName}`,
+      details: { leaseId: lease_id, alertDate: alert_date }
     });
 
     res.status(201).json({ success: true, alert });
@@ -110,6 +119,13 @@ router.put('/:id', authenticateToken, async (req, res) => {
     }
 
     await alert.update(updates);
+    await recordAudit(req, {
+      action: 'update',
+      entityType: 'alert',
+      entityId: alert.id,
+      title: `Updated lease alert #${alert.id}`,
+      details: { fields: Object.keys(updates) }
+    });
     res.json({ success: true, alert });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -121,7 +137,9 @@ router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const alert = await LeaseAlert.findOne({ where: { id: req.params.id, userId: req.user.id } });
     if (!alert) return res.status(404).json({ error: 'Alert not found' });
+    const title = `Deleted lease alert #${alert.id}`;
     await alert.destroy();
+    await recordAudit(req, { action: 'delete', entityType: 'alert', entityId: req.params.id, title });
     res.json({ message: 'Alert deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });

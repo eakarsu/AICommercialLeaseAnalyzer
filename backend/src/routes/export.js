@@ -1,6 +1,7 @@
 const express = require('express');
 const { Lease, Escalation, Negotiation, Portfolio, MarketComp } = require('../models');
 const { authenticateToken } = require('../middleware/auth');
+const { recordAudit } = require('../utils/audit');
 const router = express.Router();
 
 const toCSV = (data, columns) => {
@@ -16,6 +17,21 @@ const toCSV = (data, columns) => {
   );
   return [header, ...rows].join('\n');
 };
+
+async function sendCSV(req, res, entityType, filename, rows, columns) {
+  const csv = toCSV(rows, columns);
+  await recordAudit(req, {
+    action: 'export',
+    entityType,
+    entityId: filename,
+    title: `Exported ${entityType} CSV`,
+    source: 'export',
+    details: { filename, rowCount: rows.length }
+  });
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+  res.send(csv);
+}
 
 router.get('/leases', authenticateToken, async (req, res) => {
   try {
@@ -37,10 +53,7 @@ router.get('/leases', authenticateToken, async (req, res) => {
       { key: 'escalationClause', label: 'Escalation Clause' },
       { key: 'renewalOption', label: 'Renewal Option' },
     ];
-    const csv = toCSV(leases.map(l => l.toJSON()), columns);
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename=leases_export.csv');
-    res.send(csv);
+    await sendCSV(req, res, 'lease', 'leases_export.csv', leases.map(l => l.toJSON()), columns);
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
@@ -60,10 +73,7 @@ router.get('/escalations', authenticateToken, async (req, res) => {
       { key: 'floorRate', label: 'Floor Rate' },
       { key: 'status', label: 'Status' },
     ];
-    const csv = toCSV(items.map(i => i.toJSON()), columns);
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename=escalations_export.csv');
-    res.send(csv);
+    await sendCSV(req, res, 'escalation', 'escalations_export.csv', items.map(i => i.toJSON()), columns);
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
@@ -83,10 +93,7 @@ router.get('/negotiations', authenticateToken, async (req, res) => {
       { key: 'freeRentMonths', label: 'Free Rent Months' },
       { key: 'negotiationStatus', label: 'Status' },
     ];
-    const csv = toCSV(items.map(i => i.toJSON()), columns);
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename=negotiations_export.csv');
-    res.send(csv);
+    await sendCSV(req, res, 'negotiation', 'negotiations_export.csv', items.map(i => i.toJSON()), columns);
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
@@ -110,10 +117,7 @@ router.get('/portfolio', authenticateToken, async (req, res) => {
       { key: 'riskScore', label: 'Risk Score' },
       { key: 'status', label: 'Status' },
     ];
-    const csv = toCSV(items.map(i => i.toJSON()), columns);
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename=portfolio_export.csv');
-    res.send(csv);
+    await sendCSV(req, res, 'portfolio', 'portfolio_export.csv', items.map(i => i.toJSON()), columns);
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
@@ -133,10 +137,7 @@ router.get('/market-comps', authenticateToken, async (req, res) => {
       { key: 'tenantName', label: 'Tenant' },
       { key: 'transactionDate', label: 'Transaction Date' },
     ];
-    const csv = toCSV(items.map(i => i.toJSON()), columns);
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename=market_comps_export.csv');
-    res.send(csv);
+    await sendCSV(req, res, 'marketComp', 'market_comps_export.csv', items.map(i => i.toJSON()), columns);
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
