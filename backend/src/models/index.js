@@ -7,6 +7,7 @@ const User = sequelize.define('User', {
   password: { type: DataTypes.STRING, allowNull: false },
   name: { type: DataTypes.STRING, allowNull: false },
   role: { type: DataTypes.STRING, defaultValue: 'analyst' },
+  tenantId: { type: DataTypes.UUID, field: 'tenant_id' },
   isVerified: { type: DataTypes.BOOLEAN, defaultValue: false },
   verificationToken: { type: DataTypes.STRING },
   verificationTokenExpiry: { type: DataTypes.DATE }

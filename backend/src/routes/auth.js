@@ -49,7 +49,7 @@ router.post('/login', async (req, res) => {
     if (!user) return res.status(400).json({ error: 'User not found' });
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) return res.status(400).json({ error: 'Invalid password' });
-    const token = jwt.sign({ id: user.id, email: user.email, role: user.role, name: user.name }, JWT_SECRET, { expiresIn: '24h' });
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role, name: user.name, tenant_id: user.tenantId }, JWT_SECRET, { expiresIn: '24h' });
     res.json({ token, user: { id: user.id, email: user.email, name: user.name, role: user.role, isVerified: user.isVerified } });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -58,7 +58,7 @@ router.post('/login', async (req, res) => {
 
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, name, role } = req.body;
+    const { email, password, name } = req.body;
     if (!email || !password || !name) return res.status(400).json({ error: 'email, password, and name are required' });
     if (password.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters' });
 
@@ -73,7 +73,7 @@ router.post('/register', async (req, res) => {
       email,
       password: hashedPassword,
       name,
-      role: role || 'analyst',
+      role: 'analyst',
       verificationToken,
       verificationTokenExpiry
     });
@@ -86,7 +86,7 @@ router.post('/register', async (req, res) => {
       `<h2>Welcome, ${name}!</h2><p>Click below to verify your email:</p><a href="${verifyUrl}">${verifyUrl}</a><p>Link expires in 24 hours.</p>`
     );
 
-    const token = jwt.sign({ id: user.id, email: user.email, role: user.role, name: user.name }, JWT_SECRET, { expiresIn: '24h' });
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role, name: user.name, tenant_id: user.tenantId }, JWT_SECRET, { expiresIn: '24h' });
     res.json({ token, user: { id: user.id, email: user.email, name: user.name, role: user.role, isVerified: false } });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -118,6 +118,10 @@ router.post('/send-verification', authenticateToken, async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
+});
+
+router.get('/me', authenticateToken, (req, res) => {
+  res.json({ user: req.user });
 });
 
 // GET /api/auth/verify/:token — mark user as verified

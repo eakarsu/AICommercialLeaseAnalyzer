@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') });
 
-const JWT_SECRET = process.env.JWT_SECRET || 'lease-analyzer-secret-key-2024';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
