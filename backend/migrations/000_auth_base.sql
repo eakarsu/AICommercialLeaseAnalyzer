@@ -1,0 +1,27 @@
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  role VARCHAR(255) DEFAULT 'analyst',
+  tenant_id UUID,
+  "isVerified" BOOLEAN DEFAULT FALSE,
+  "verificationToken" VARCHAR(255),
+  "verificationTokenExpiry" TIMESTAMP WITH TIME ZONE,
+  "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS audit_logs (
+  id SERIAL PRIMARY KEY,
+  "userId" INTEGER REFERENCES users(id),
+  action VARCHAR(255) NOT NULL,
+  "entityType" VARCHAR(255) NOT NULL,
+  "entityId" VARCHAR(255),
+  title VARCHAR(255) NOT NULL,
+  status VARCHAR(255) DEFAULT 'completed',
+  source VARCHAR(255) DEFAULT 'app',
+  details JSONB,
+  "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);

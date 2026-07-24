@@ -38,8 +38,9 @@ async function callOpenRouter(prompt, systemPrompt = 'You are an expert commerci
   }
 
   try {
+    const baseUrl = (process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1').replace(/\/$/, '');
     const response = await axios.post(
-      'https://openrouter.ai/api/v1/chat/completions',
+      `${baseUrl}/chat/completions`,
       {
         model: OPENROUTER_MODEL,
         messages: [
