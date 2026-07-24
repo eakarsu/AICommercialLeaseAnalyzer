@@ -170,7 +170,7 @@ async function seed() {
     console.log('\n✅ Database seeding completed successfully!');
     console.log('Login credentials:');
     console.log('  Email: admin@leaseanalyzer.com');
-    console.log('  Password: password123');
+    console.log('Demo login users provisioned from the local environment.');
     process.exit(0);
   } catch (error) {
     console.error('Seeding failed:', error);
