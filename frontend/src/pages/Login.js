@@ -67,7 +67,7 @@ const Login = () => {
           <div className="mt-4">
             <button onClick={handleAutoFill}
               className="w-full bg-dark-700/50 text-dark-300 font-medium py-3 rounded-xl hover:bg-dark-700 hover:text-white transition-all border border-dark-600/50">
-              ⚡ Auto-fill Demo Credentials
+              Auto Fill Demo Credentials
             </button>
           </div>
         </div>
