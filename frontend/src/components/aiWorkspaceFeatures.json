@@ -1,0 +1,107 @@
+[
+  {
+    "name": "AgenticLeaseAbstractorReviewerExtractingClausPage",
+    "id": "cf-agentic-lease-abstractor-reviewer-extracting-claus",
+    "title": "Agentic lease abstractor + reviewer extracting clauses, flagging risks, and suggesting redlines",
+    "description": "Prepare a professional advisory report for agentic lease abstractor + reviewer extracting clauses, flagging risks, and suggesting redlines using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "NoAiClauseExtractionCamEscalationExclusivityPage",
+    "id": "gap-no-ai-clause-extraction-cam-escalation-exclusivity",
+    "title": "No AI clause-extraction (CAM, escalation, exclusivity) into structured fields",
+    "description": "Prepare a professional advisory report for no ai clause-extraction (cam, escalation, exclusivity) into structured fields using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "NoAiDocumentOcrLayerForScannedLeasesPage",
+    "id": "gap-no-ai-document-ocr-layer-for-scanned-leases",
+    "title": "No AI document OCR layer for scanned leases",
+    "description": "Prepare a professional advisory report for no ai document ocr layer for scanned leases using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "NoAiPortfolioAnomalyDetectionAcrossLeasesPage",
+    "id": "gap-no-ai-portfolio-anomaly-detection-across-leases",
+    "title": "No AI portfolio anomaly detection across leases",
+    "description": "Prepare a professional advisory report for no ai portfolio anomaly detection across leases using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "NoAiRedliningNegotiationRecommendationEnginePage",
+    "id": "gap-no-ai-redlining-negotiation-recommendation-engine-",
+    "title": "No AI redlining / negotiation-recommendation engine wired to UI",
+    "description": "Prepare a professional advisory report for no ai redlining / negotiation-recommendation engine wired to ui using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "NoDirectPropertyManagementApiClientYardiMriPage",
+    "id": "gap-no-direct-property-management-api-client-yardi-mri",
+    "title": "No direct property-management API client (Yardi, MRI)",
+    "description": "Prepare a professional advisory report for no direct property-management api client (yardi, mri) using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "NoESignatureIntegrationDocusignAdobeSignPage",
+    "id": "gap-no-e-signature-integration-docusign-adobe-sign",
+    "title": "No e-signature integration (DocuSign, Adobe Sign)",
+    "description": "Prepare a professional advisory report for no e-signature integration (docusign, adobe sign) using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "NoMultiCurrencySupportForInternationalPortfoPage",
+    "id": "gap-no-multi-currency-support-for-international-portfo",
+    "title": "No multi-currency support for international portfolios",
+    "description": "Prepare a professional advisory report for no multi-currency support for international portfolios using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "NoTenantPortalForRepairExpenseReconciliationPage",
+    "id": "gap-no-tenant-portal-for-repair-expense-reconciliation",
+    "title": "No tenant-portal for repair/expense reconciliation",
+    "description": "Prepare a professional advisory report for no tenant-portal for repair/expense reconciliation using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "NoWebhookOutboundApiPage",
+    "id": "gap-no-webhook-outbound-api",
+    "title": "No webhook outbound API",
+    "description": "Prepare a professional advisory report for no webhook outbound api using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "NotificationRoutesExistButNoSmsEmailDeliverPage",
+    "id": "gap-notification-routes-exist-but-no-sms-email-deliver",
+    "title": "Notification routes exist but no SMS/email delivery channel",
+    "description": "Prepare a professional advisory report for notification routes exist but no sms/email delivery channel using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "Only5AiEndpointsDespiteDocumentHeavyDomainPage",
+    "id": "gap-only-5-ai-endpoints-despite-document-heavy-domain",
+    "title": "Only 5 AI endpoints despite document-heavy domain",
+    "description": "Prepare a professional advisory report for only 5 ai endpoints despite document-heavy domain using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "RagOverLeasePortfolioPlusMarketDataForContPage",
+    "id": "cf-rag-over-lease-portfolio-plus-market-data-for-cont",
+    "title": "RAG over lease portfolio plus market data for contextual negotiation advice",
+    "description": "Prepare a professional advisory report for rag over lease portfolio plus market data for contextual negotiation advice using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "RealTimeCriticalDateAlertsWithAutoDraftedNPage",
+    "id": "cf-real-time-critical-date-alerts-with-auto-drafted-n",
+    "title": "Real-time critical-date alerts with auto-drafted notices",
+    "description": "Prepare a professional advisory report for real-time critical-date alerts with auto-drafted notices using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "WhiteLabelDeploymentForTenantRepBrokeragesAPage",
+    "id": "cf-white-label-deployment-for-tenant-rep-brokerages-a",
+    "title": "White-label deployment for tenant-rep brokerages and corporate real-estate teams",
+    "description": "Prepare a professional advisory report for white-label deployment for tenant-rep brokerages and corporate real-estate teams using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  }
+]

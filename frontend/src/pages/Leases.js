@@ -82,7 +82,7 @@ const Leases = () => {
     setAiResult(null);
     try {
       const { data } = await leaseAPI.analyze(selected);
-      setAiResult(data.analysis || data);
+      setAiResult(data);
     } catch (err) { setError('AI analysis failed'); }
     finally { setAiLoading(false); }
   };
@@ -178,7 +178,7 @@ const Leases = () => {
                 <div className="ai-loading h-6 rounded-lg w-2/3"></div>
               </div>
             )}
-            <AIResultDisplay result={aiResult} type="lease" />
+            <AIResultDisplay result={aiResult || selected.aiAbstraction} type="lease" />
           </div>
         )}
       </Modal>

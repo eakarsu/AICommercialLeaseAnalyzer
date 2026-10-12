@@ -287,14 +287,17 @@ const normalizeResult = (result) => {
         warning: 'Malformed AI output was suppressed instead of displaying raw JSON.'
       };
     }
-    const visibleKeys = Object.keys(normalized).filter((key) => !HIDDEN_KEYS.has(key));
-    if (visibleKeys.length === 1 && visibleKeys[0] === 'analysis') {
-      const unwrapped = normalizeDeep(normalized.analysis);
-      if (isPlainObject(unwrapped)) return unwrapped;
-      return parseLooseAnalysis(unwrapped) || { summary: unwrapped };
-    }
-    if (isPlainObject(normalized.analysis)) {
-      return { ...normalized.analysis, provider: normalized.provider, warning: normalized.warning };
+    const envelopeKey = ['analysis', 'comparison', 'audit', 'clauses', 'result', 'output']
+      .find((key) => normalized[key] !== undefined && normalized[key] !== null);
+    if (envelopeKey) {
+      const unwrapped = normalizeDeep(normalized[envelopeKey]);
+      const metadata = {
+        ...(normalized.provider ? { provider: normalized.provider } : {}),
+        ...(normalized.warning ? { warning: normalized.warning } : {})
+      };
+      if (isPlainObject(unwrapped)) return { ...unwrapped, ...metadata };
+      if (Array.isArray(unwrapped)) return { results: unwrapped, ...metadata };
+      return { summary: unwrapped, ...metadata };
     }
   }
   return normalized || {};

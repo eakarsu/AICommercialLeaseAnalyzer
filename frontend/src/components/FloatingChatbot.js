@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaComments, FaPaperPlane, FaTimes, FaExternalLinkAlt, FaTrashAlt } from 'react-icons/fa';
+import AIResultDisplay from './AIResultDisplay';
 import { chatbotAPI } from '../services/api';
 
 const starterPrompts = [
-  'Create lease for Atlas Bio Labs at 900 Innovation Dr monthly rent 48500 14000 sf.',
-  'List leases.',
-  'Add escalation for Atlas Bio Labs current rent 48500 rate 3% annual.',
-  'Run lease comparison for ids 1, 2, 3.',
-  'Run lease audit for lease id 1.'
+  { label: 'Compare lease economics', prompt: 'Run a lease comparison using the three highest-rent available lease records. Compare economics, term flexibility, risk, and negotiation priorities.' },
+  { label: 'Audit a lease', prompt: 'Run a lease audit for lease id 1. Review missing provisions, unfavorable clauses, tenant protections, negotiation priorities, and action items.' },
+  { label: 'Stress-test portfolio', prompt: 'Run a portfolio stress test for the highest-risk available portfolio record. Model a 10% rent decline, 15% vacancy, cap-rate expansion, debt-service pressure, and delayed renewals.' }
 ];
 
 const routeLabels = {
@@ -58,15 +57,11 @@ const BotMessage = ({ message }) => {
         </React.Fragment>
       ))}
       {response.action === 'run_ai' && (
-        <div className="mt-3 rounded-lg border border-primary-500/30 bg-primary-500/10 p-3">
-          <div className="text-xs font-semibold uppercase tracking-wide text-primary-300">
+        <div className="mt-3">
+          <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-primary-300">
             {response.workflow || 'AI workflow'} · {response.provider || 'OpenRouter'}
           </div>
-          {(result.recommendations || result.legalRisks || result.riskFactors) && (
-            <div className="mt-2 text-xs leading-5 text-dark-200">
-              Structured analysis is available. Open AI Lab for the full report view.
-            </div>
-          )}
+          <AIResultDisplay result={{ analysis: result, provider: response.provider, warning: response.warning }} />
         </div>
       )}
       {response.deletedId && (
@@ -194,14 +189,16 @@ const FloatingChatbot = () => {
           </div>
 
           <div className="border-b border-dark-800 px-4 py-3">
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-dark-400">AI prompt presets · fill every field</div>
             <div className="grid gap-2">
-              {starterPrompts.map((prompt) => (
+              {starterPrompts.map(({ label, prompt }) => (
                 <button
-                  key={prompt}
+                  key={label}
                   type="button"
                   onClick={() => setInput(prompt)}
                   className="rounded-lg border border-dark-700 bg-dark-900/80 px-3 py-2 text-left text-xs leading-5 text-dark-200 transition hover:border-primary-500/50 hover:bg-primary-500/10"
                 >
+                  <strong className="block text-primary-300">{label}</strong>
                   {prompt}
                 </button>
               ))}

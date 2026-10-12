@@ -1,3 +1,4 @@
+import NativeAIControls from "../components/NativeAIControls.jsx";
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import AIResultDisplay from '../components/AIResultDisplay';
@@ -315,6 +316,28 @@ Please extract and cross-check clauses from the known metadata above. Treat miss
     setAutoFilled(true);
   }, [autoFilled, leases, portfolio]);
 
+  const fullPresets = ['First review', 'Alternate review', 'Detailed review'].map((name, index) => ({
+    name,
+    fill: () => {
+      const actualLease = leases.find(item => getId(item) === (tab === 'sublease' ? subLease : tab === 'termination' ? termLease : tab === 'audit' ? auditLease : clauseLease)) || leases[Math.min(index, leases.length - 1)];
+      const actualPortfolio = portfolio.find(item => getId(item) === stressPortfolio) || portfolio[Math.min(index, portfolio.length - 1)];
+      if (tab === 'comparison') {
+        setCmpIds(leases.slice(0, index === 0 ? 2 : 3).map(getId).filter(Boolean));
+        return { filled: Math.min(leases.length, index === 0 ? 2 : 3), manual: leases.length < 2 ? ['at least two owned lease records'] : [] };
+      }
+      if (tab === 'stress') {
+        if (actualPortfolio) fillStressFields(actualPortfolio, stressTemplates[index]);
+        return { filled: actualPortfolio ? 2 : 0, manual: actualPortfolio ? [] : ['an owned portfolio record'] };
+      }
+      if (!actualLease) return { filled: 0, manual: ['an owned lease record'] };
+      if (tab === 'sublease') fillSubleaseFields(actualLease, subleaseTemplates[index]);
+      if (tab === 'termination') fillTerminationFields(actualLease, terminationTemplates[index]);
+      if (tab === 'audit') fillAuditFields(actualLease);
+      if (tab === 'clauses') fillClauseFields(actualLease, focusOptions[index].value);
+      return { filled: tab === 'audit' ? 1 : tab === 'clauses' ? 3 : 2, manual: [] };
+    }
+  }));
+
   const tabs = [
     { key: 'comparison', icon: 'C', label: 'Lease Comparison Report' },
     { key: 'sublease', icon: 'S', label: 'Sublease Analysis' },
@@ -325,7 +348,7 @@ Please extract and cross-check clauses from the known metadata above. Treat miss
   ];
 
   return (
-    <div className="min-h-screen bg-dark-950">
+    <NativeAIControls busy={cmpLoading || subLoading || termLoading || auditLoading || clauseLoading || stressLoading} context="CommercialLeaseAnalyzer" presets={fullPresets}><div className="min-h-screen bg-dark-950">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-6">
@@ -389,7 +412,7 @@ Please extract and cross-check clauses from the known metadata above. Treat miss
             <h3 className="text-xl font-bold text-white mb-2">Sublease Analysis</h3>
             <p className="text-dark-400 text-sm mb-4">Evaluate viability and legal risk of subleasing under the master lease.</p>
             <FieldLabel>Master Lease</FieldLabel>
-            <select
+            <select data-ai-field={"subLease"}
               className={inp + ' mb-4'}
               value={subLease}
               onChange={e => {
@@ -420,7 +443,7 @@ Please extract and cross-check clauses from the known metadata above. Treat miss
               <option value="">Fill from sublease scenario...</option>
               {subleaseTemplates.map(template => <option key={template.label} value={template.label}>{template.label}</option>)}
             </select>
-            <textarea
+            <textarea data-ai-field={"subTerms"}
               className={inp + ' mb-4 h-40'}
               placeholder="Describe proposed subtenant, rent, term, scope..."
               value={subTerms}
@@ -436,7 +459,7 @@ Please extract and cross-check clauses from the known metadata above. Treat miss
             <h3 className="text-xl font-bold text-white mb-2">Early Termination Calculator</h3>
             <p className="text-dark-400 text-sm mb-4">Estimate exit cost, negotiation strategy, and walk-away options.</p>
             <FieldLabel>Lease</FieldLabel>
-            <select
+            <select data-ai-field={"termLease"}
               className={inp + ' mb-4'}
               value={termLease}
               onChange={e => {
@@ -467,7 +490,7 @@ Please extract and cross-check clauses from the known metadata above. Treat miss
               <option value="">Fill from termination scenario...</option>
               {terminationTemplates.map(template => <option key={template.label} value={template.label}>{template.label}</option>)}
             </select>
-            <textarea
+            <textarea data-ai-field={"termScenario"}
               className={inp + ' mb-4 h-32'}
               placeholder="Reason for termination, target exit date, any leverage points..."
               value={termScenario}
@@ -483,7 +506,7 @@ Please extract and cross-check clauses from the known metadata above. Treat miss
             <h3 className="text-xl font-bold text-white mb-2">Lease Audit</h3>
             <p className="text-dark-400 text-sm mb-4">Identify missing provisions, unfavorable clauses, and tenant-protection gaps.</p>
             <FieldLabel>Lease</FieldLabel>
-            <select
+            <select data-ai-field={"auditLease"}
               className={inp + ' mb-4'}
               value={auditLease}
               onChange={e => {
@@ -509,7 +532,7 @@ Please extract and cross-check clauses from the known metadata above. Treat miss
             <h3 className="text-xl font-bold text-white mb-2">Extract Clauses</h3>
             <p className="text-dark-400 text-sm mb-4">Paste raw lease document text to extract clause-level structured data (parties, term, rent, escalation, options, default, indemnity, insurance, assignment, red flags, missing clauses).</p>
             <FieldLabel>Lease (optional — for cross-check)</FieldLabel>
-            <select
+            <select data-ai-field={"clauseLease"}
               className={inp + ' mb-4'}
               value={clauseLease}
               onChange={e => {
@@ -526,14 +549,14 @@ Please extract and cross-check clauses from the known metadata above. Treat miss
               <FillButton onClick={() => setClauseDoc(`${clauseDoc}\n\n${selectedClauseLease ? buildLeaseDocumentText(selectedClauseLease) : ''}`.trim())}>Append selected lease data</FillButton>
               <FillButton onClick={() => setClauseDoc('')}>Clear document text</FillButton>
             </FieldTools>
-            <textarea
+            <textarea data-ai-field={"clauseDoc"}
               className={inp + ' mb-4 h-64 font-mono text-xs'}
               placeholder="Paste lease document text here (minimum 50 characters; truncated to ~24k chars)..."
               value={clauseDoc}
               onChange={e => setClauseDoc(e.target.value)}
             />
             <FieldLabel>Special Focus (optional)</FieldLabel>
-            <select
+            <select data-ai-field={"clauseFocus"}
               className={inp + ' mb-4'}
               value={clauseFocus}
               onChange={e => setClauseFocus(e.target.value)}
@@ -541,7 +564,7 @@ Please extract and cross-check clauses from the known metadata above. Treat miss
               <option value="">No special focus</option>
               {focusOptions.map(option => <option key={option.label} value={option.value}>{option.label}</option>)}
             </select>
-            <input
+            <input data-ai-field={"clauseFocus"}
               className={inp + ' mb-4'}
               placeholder="Or type a custom focus..."
               value={clauseFocus}
@@ -569,7 +592,7 @@ Please extract and cross-check clauses from the known metadata above. Treat miss
             <h3 className="text-xl font-bold text-white mb-2">Portfolio Stress Test</h3>
             <p className="text-dark-400 text-sm mb-4">AI scenario modeling — rent drops, occupancy changes, NPV impact.</p>
             <FieldLabel>Portfolio Entry</FieldLabel>
-            <select
+            <select data-ai-field={"stressPortfolio"}
               className={inp + ' mb-4'}
               value={stressPortfolio}
               onChange={e => {
@@ -600,7 +623,7 @@ Please extract and cross-check clauses from the known metadata above. Treat miss
               <option value="">Fill from stress scenario...</option>
               {stressTemplates.map(template => <option key={template.label} value={template.label}>{template.label}</option>)}
             </select>
-            <textarea
+            <textarea data-ai-field={"stressScenario"}
               className={inp + ' mb-4 h-28'}
               value={stressScenario}
               onChange={e => setStressScenario(e.target.value)}
@@ -610,7 +633,7 @@ Please extract and cross-check clauses from the known metadata above. Treat miss
           </div>
         )}
       </div>
-    </div>
+    </div></NativeAIControls>
   );
 };
 

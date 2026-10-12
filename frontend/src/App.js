@@ -1,3 +1,4 @@
+import AIReportLibrary from "./components/AIReportLibrary";
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
@@ -36,7 +37,7 @@ const PrivateRoute = ({ children }) => {
 
 function App() {
   return (
-    <Router>
+    <><AIReportLibrary floating /><Router>
       <Routes>
         <Route path="/insights/timeline" element={<TimelineView />} />
         <Route path="/codex/custom-viz" element={<CodexCustomVizFeature />} />
@@ -61,7 +62,7 @@ function App() {
         <Route path="/co-tenancy-clause-watch" element={<PrivateRoute><CoTenancyClauseWatch /></PrivateRoute>} />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
-    </Router>
+    </Router></>
   );
 }
 

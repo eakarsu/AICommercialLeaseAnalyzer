@@ -1,25 +1,26 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
 
+const DEMO_EMAIL = process.env.REACT_APP_DEMO_EMAIL || '';
+const DEMO_PASSWORD = process.env.REACT_APP_DEMO_PASSWORD || '';
+const DEMO_ENABLED = process.env.REACT_APP_ENABLE_DEMO_CREDENTIAL_AUTOFILL === 'true' && DEMO_EMAIL && DEMO_PASSWORD;
+
 const Login = () => {
+  const demoLoginLock = useRef(false);
+  const [demoLoginBusy, setDemoLoginBusy] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleAutoFill = () => {
-    setEmail(process.env.REACT_APP_DEMO_EMAIL || '');
-    setPassword(process.env.REACT_APP_DEMO_PASSWORD || '');
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, credentials) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     try {
-      const { data } = await authAPI.login({ email, password });
+      const { data } = await authAPI.login({ email: credentials?.email ?? email, password: credentials?.password ?? password });
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       navigate('/dashboard');
@@ -27,6 +28,20 @@ const Login = () => {
       setError(err.response?.data?.error || 'Login failed');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDemoLogin = async (event) => {
+    if (demoLoginLock.current) return;
+    demoLoginLock.current = true;
+    setDemoLoginBusy(true);
+    setEmail(DEMO_EMAIL);
+    setPassword(DEMO_PASSWORD);
+    try {
+      await handleSubmit(event, { email: DEMO_EMAIL, password: DEMO_PASSWORD });
+    } finally {
+      demoLoginLock.current = false;
+      setDemoLoginBusy(false);
     }
   };
 
@@ -64,12 +79,14 @@ const Login = () => {
             </button>
           </form>
 
-          <div className="mt-4">
-            <button onClick={handleAutoFill}
-              className="w-full bg-dark-700/50 text-dark-300 font-medium py-3 rounded-xl hover:bg-dark-700 hover:text-white transition-all border border-dark-600/50">
-              Auto Fill Demo Credentials
-            </button>
-          </div>
+          {DEMO_ENABLED && (
+            <div className="mt-4">
+              <button type="button" disabled={demoLoginBusy || loading} onClick={handleDemoLogin}
+                className="w-full bg-dark-700/50 text-dark-300 font-medium py-3 rounded-xl hover:bg-dark-700 hover:text-white transition-all border border-dark-600/50 disabled:opacity-50">
+                {demoLoginBusy ? 'Signing in as Demo...' : 'Log in as Demo'}
+              </button>
+            </div>
+          )}
         </div>
 
         <p className="text-center text-dark-500 text-sm mt-6">AI-Powered Commercial Lease Analysis</p>

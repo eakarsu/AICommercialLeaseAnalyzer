@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { Lease, Escalation, Negotiation, Portfolio, MarketComp } = require('../models');
 const { recordAudit } = require('../utils/audit');
 require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') });
 
@@ -28,6 +29,11 @@ function yearsBetween(startDate, endDate, fallbackYears = 5) {
     return fallbackYears;
   }
   return Math.max(1, Math.ceil((end - start) / (365.25 * 24 * 60 * 60 * 1000)));
+}
+
+async function persistAnalysis(Model, id, field, value) {
+  if (!id) return;
+  await Model.update({ [field]: value }, { where: { id } });
 }
 
 async function callOpenRouter(prompt, systemPrompt = 'You are an expert commercial real estate analyst. Provide detailed, professional analysis.') {
@@ -161,6 +167,7 @@ Provide analysis as JSON with these keys:
     };
 
     const result = await callOpenRouterOrFallback(prompt, fallback);
+    await persistAnalysis(Lease, req.body.id, 'aiAbstraction', result.parsed);
     await recordAudit(req, {
       action: 'run_ai',
       entityType: 'lease',
@@ -254,6 +261,7 @@ Provide analysis as JSON with these keys:
     };
 
     const result = await callOpenRouterOrFallback(prompt, fallback);
+    await persistAnalysis(Escalation, req.body.id, 'aiAnalysis', result.parsed);
     await recordAudit(req, {
       action: 'run_ai',
       entityType: 'escalation',
@@ -351,6 +359,7 @@ Provide analysis as JSON with these keys:
     };
 
     const result = await callOpenRouterOrFallback(prompt, fallback);
+    await persistAnalysis(Negotiation, req.body.id, 'aiInsights', result.parsed);
     await recordAudit(req, {
       action: 'run_ai',
       entityType: 'negotiation',
@@ -429,6 +438,7 @@ Provide analysis as JSON with these keys:
     };
 
     const result = await callOpenRouterOrFallback(prompt, fallback);
+    await persistAnalysis(Portfolio, req.body.id || portfolioId, 'aiOptimization', result.parsed);
     await recordAudit(req, {
       action: 'run_ai',
       entityType: 'portfolio',
@@ -513,6 +523,7 @@ Provide analysis as JSON with these keys:
     };
 
     const result = await callOpenRouterOrFallback(prompt, fallback);
+    await persistAnalysis(MarketComp, req.body.id, 'aiAnalysis', result.parsed);
     await recordAudit(req, {
       action: 'run_ai',
       entityType: 'marketComp',

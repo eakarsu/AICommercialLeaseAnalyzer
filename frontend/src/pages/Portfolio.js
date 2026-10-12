@@ -74,7 +74,7 @@ const Portfolio = () => {
     setAiResult(null);
     try {
       const { data } = await portfolioAPI.analyze(selected);
-      setAiResult(data.analysis || data);
+      setAiResult(data);
     } catch (err) { setError('AI analysis failed'); }
     finally { setAiLoading(false); }
   };
@@ -169,7 +169,7 @@ const Portfolio = () => {
             </div>
 
             {aiLoading && <div className="mt-6 space-y-3"><div className="ai-loading h-6 rounded-lg w-3/4"></div><div className="ai-loading h-6 rounded-lg w-1/2"></div><div className="ai-loading h-6 rounded-lg w-2/3"></div></div>}
-            <AIResultDisplay result={aiResult} type="portfolio" />
+            <AIResultDisplay result={aiResult || selected.aiOptimization} type="portfolio" />
           </div>
         )}
       </Modal>
