@@ -28,7 +28,13 @@ router.get('/', authenticateToken, async (req, res) => {
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
     const offset = (page - 1) * limit;
 
+    const { Op } = require('sequelize');
+    const where = {};
+    if (req.query.status) where.status = req.query.status;
+    if (req.query.propertyType) where.propertyType = req.query.propertyType;
+    if (req.query.search) { const s = { [Op.iLike]: `%${req.query.search}%` }; where[Op.or] = [{ tenantName: s }, { propertyAddress: s }]; }
     const { count, rows } = await Lease.findAndCountAll({
+      where,
       order: [['createdAt', 'DESC']],
       limit,
       offset

@@ -52,6 +52,7 @@ app.get('/api/health', (req, res) => {
 // Advisory AI reports only; native execution and approval routes stay unchanged.
 const aiWorkspaceSupport = require("../aiWorkspaceAdapters.cjs");
 const aiWorkspaceDatabase = aiWorkspaceSupport.sequelizeQueryClient(require("./config/database.js"));
+app.use('/api/wave30c', require('./routes/wave30cRoutes'));
 app.use('/api/report-workspace', require("../aiWorkspace.cjs").createAIWorkspaceRouter({
   pool: aiWorkspaceDatabase, authenticateToken: require("./middleware/auth.js").authenticateToken,
   aiRateLimiter: aiWorkspaceSupport.createWorkspaceLimiter(), features: require("../aiWorkspaceFeatures.json"),
